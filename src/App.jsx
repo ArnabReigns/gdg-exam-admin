@@ -4,7 +4,6 @@ import { Outlet, Route, Routes } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import Flex from "./components/ui/Flex";
-import { Height } from "@mui/icons-material";
 import ExamsPage from "./pages/ExamsPage";
 import BatchPage from "./pages/BatchPage";
 
