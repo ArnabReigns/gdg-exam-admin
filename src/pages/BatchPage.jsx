@@ -126,7 +126,7 @@ const CreateQuestionForm = ({ exam, savedQuestions, setValue }) => {
 		if (questions.answer > 4 || questions.answer < 0)
 			return alert("fuck off");
 
-		axios
+		api
 			.post("/create-question", {
 				question: questions.question,
 				choices: [
@@ -303,7 +303,7 @@ const CreateExamForm = ({ dept }) => {
 		}
 
 		// Send request
-		axios
+		api
 			.post("/create-exam", {
 				name: form.name,
 				mainSubject: form.mainSubject,
