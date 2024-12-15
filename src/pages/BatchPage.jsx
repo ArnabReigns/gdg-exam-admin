@@ -16,6 +16,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Flex from "../components/ui/Flex";
+import api from "../config/axios";
 
 const BatchPage = () => {
 	const [value, setValue] = useState(0);
@@ -31,17 +32,11 @@ const BatchPage = () => {
 
 	// Fetch exams on component mount
 	useEffect(() => {
-		axios
-			.get(
-				`http://localhost:8998/api/v1/admin/get-exams/${dept}?a_email=aritra@gdgoctiu.com&a_pass=RJiQ$jwzeOQrR$z9`
-			)
+		api.get(`/get-exams/${dept}`)
 			.then((res) => {
 				if (res.data.found) {
 					setExam(res.data.exam);
-					axios
-						.get(
-							`http://localhost:8998/api/v1/admin/get-questions/${res.data.exam._id}?a_email=aritra@gdgoctiu.com&a_pass=RJiQ$jwzeOQrR$z9`
-						)
+					api.get(`/get-questions/${res.data.exam._id}`)
 						.then((res) => {
 							setQuestions(res.data.questions);
 							console.log(res.data);
@@ -132,34 +127,31 @@ const CreateQuestionForm = ({ exam, savedQuestions, setValue }) => {
 			return alert("fuck off");
 
 		axios
-			.post(
-				"http://localhost:8998/api/v1/admin/create-question?a_email=aritra@gdgoctiu.com&a_pass=RJiQ$jwzeOQrR$z9",
-				{
-					question: questions.question,
-					choices: [
-						{
-							index: 1,
-							choice: questions.option1,
-						},
-						{
-							index: 2,
-							choice: questions.option2,
-						},
-						{
-							index: 3,
-							choice: questions.option3,
-						},
-						{
-							index: 4,
-							choice: questions.option4,
-						},
-					],
-					rightChoice: {
-						index: parseInt(questions.answer),
+			.post("/create-question", {
+				question: questions.question,
+				choices: [
+					{
+						index: 1,
+						choice: questions.option1,
 					},
-					examId: exam._id,
-				}
-			)
+					{
+						index: 2,
+						choice: questions.option2,
+					},
+					{
+						index: 3,
+						choice: questions.option3,
+					},
+					{
+						index: 4,
+						choice: questions.option4,
+					},
+				],
+				rightChoice: {
+					index: parseInt(questions.answer),
+				},
+				examId: exam._id,
+			})
 			.then((res) => {
 				console.log(res.data);
 			})
@@ -312,19 +304,16 @@ const CreateExamForm = ({ dept }) => {
 
 		// Send request
 		axios
-			.post(
-				"http://localhost:8998/api/v1/admin/create-exam?a_email=aritra@gdgoctiu.com&a_pass=RJiQ$jwzeOQrR$z9",
-				{
-					name: form.name,
-					mainSubject: form.mainSubject,
-					iteration: 1,
-					dept: form.dept,
-					subTopics: ["dl"], // Modify this if dynamic subtopics are required
-					totalMarks: form.totalMarks,
-					marksPerQuestion: form.marksPerQuestion,
-					date: new Date(),
-				}
-			)
+			.post("/create-exam", {
+				name: form.name,
+				mainSubject: form.mainSubject,
+				iteration: 1,
+				dept: form.dept,
+				subTopics: ["dl"], // Modify this if dynamic subtopics are required
+				totalMarks: form.totalMarks,
+				marksPerQuestion: form.marksPerQuestion,
+				date: new Date(),
+			})
 			.then((res) => {
 				console.log("Exam created:", res.data);
 				alert("Exam created successfully!");
