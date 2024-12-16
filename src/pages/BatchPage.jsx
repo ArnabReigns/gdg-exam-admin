@@ -30,6 +30,56 @@ const BatchPage = () => {
   const { dept } = useParams();
   const [loading, setLoading] = useState(true);
   const [isFormVisible, setIsFormVisible] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [attendee, setAttendee] = useState({
+    name: "",
+    email: "",
+    dept: "",
+    studentId: "",
+    attempts: "",
+  });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setAttendee({ ...attendee, [name]: value });
+  };
+
+  const handleAttendeeChange = () => {
+    setShowForm(!showForm);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (
+      !attendee.name ||
+      !attendee.email ||
+      !attendee.dept ||
+      !attendee.studentId ||
+      !attendee.attempts
+    ) {
+      toast.error("Please fill in all the fields");
+      return;
+    }
+
+    // create user wala post
+    api
+      .post("/create-user", attendee)
+      .then((res) => {
+        toast.success("Attendee added successfully!");
+        setAttendee({
+          name: "",
+          email: "",
+          dept: "",
+          studentId: "",
+          attempts: "",
+        });
+        setShowForm(false);
+      })
+      .catch((err) => {
+        toast.error("Error adding attendee");
+        console.error(err);
+      });
+  };
 
   const toggleFormVisibility = () => {
     setIsFormVisible((prevState) => !prevState);
@@ -292,9 +342,9 @@ const BatchPage = () => {
                           margin: 1,
                           flex: "flex-end",
                         }}
-                        onClick={() => handleAttendeeChange()}
+                        onClick={handleAttendeeChange}
                       >
-                        Add Attendees
+                        {showForm ? "Close Form" : "Add Attendees"}
                       </Button>
                     </Box>
                   ) : (
@@ -308,10 +358,71 @@ const BatchPage = () => {
                           flex: "flex-end",
                           gap: 2,
                         }}
-                        onClick={() => handleAttendeeChange()}
+                        onClick={handleAttendeeChange}
                       >
-                        Add Attendees
+                        {showForm ? "Close Form" : "Add Attendees"}
                       </Button>
+                      <Collapse in={showForm}>
+                        <Card sx={{ marginTop: 2, padding: 2 }}>
+                          <CardContent>
+                            <Typography variant="h6" gutterBottom>
+                              Add Attendee
+                            </Typography>
+                            <form onSubmit={handleSubmit}>
+                              <Stack spacing={2}>
+                                <TextField
+                                  label="Name"
+                                  variant="outlined"
+                                  fullWidth
+                                  name="name"
+                                  value={attendee.name}
+                                  onChange={handleInputChange}
+                                />
+                                <TextField
+                                  label="Email"
+                                  variant="outlined"
+                                  fullWidth
+                                  name="email"
+                                  value={attendee.email}
+                                  onChange={handleInputChange}
+                                />
+                                <TextField
+                                  label="Department"
+                                  variant="outlined"
+                                  fullWidth
+                                  name="dept"
+                                  value={attendee.dept}
+                                  onChange={handleInputChange}
+                                />
+                                <TextField
+                                  label="Student ID"
+                                  variant="outlined"
+                                  fullWidth
+                                  name="studentId"
+                                  value={attendee.studentId}
+                                  onChange={handleInputChange}
+                                />
+                                <TextField
+                                  label="Attempts"
+                                  variant="outlined"
+                                  fullWidth
+                                  name="attempts"
+                                  value={attendee.attempts}
+                                  onChange={handleInputChange}
+                                />
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  type="submit"
+                                >
+                                  Submit
+                                </Button>
+                              </Stack>
+                            </form>
+                          </CardContent>
+                        </Card>
+                      </Collapse>
+
                       <Box
                         sx={{
                           display: "flex",
